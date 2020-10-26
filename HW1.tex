@@ -1,0 +1,269 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Homework Assignment 1},
+  pdfauthor={Ryan Woodall},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Homework Assignment 1}
+\author{Ryan Woodall}
+\date{Assigned: Oct 24, 2020, Due Sun Nov 01, 2020 11:59PM}
+
+\begin{document}
+\maketitle
+
+\hypertarget{hw-1-instructions}{%
+\subsection{HW-1 Instructions}\label{hw-1-instructions}}
+
+\begin{quote}
+Our class emphasizes clear communication of data analysis results to
+non-technical audiences. I expect your HTML output documents to be
+readable and well formatted. I expect you to put ample comments in your
+R code to make the code understandable. Along with accuracy of results,
+I am looking for quality of presentation as well. This homework is due
+by \textbf{11:59PM on Nov 01st}. To complete this assignment, follow
+these steps:
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Create a new RStudio Project for this HW. Sync the project directory
+  with a GitHub Repository (see instructions on Canvas on how to do
+  that).
+\item
+  Download the \texttt{HW1.Rmd} file from Canvas. Save the file in the
+  RStudio Project Directory.
+\item
+  Open \texttt{HW1.Rmd} in RStudio. Replace the ``Your Name Here'' text
+  in the \texttt{author:} field with your name.
+\item
+  Supply your solutions to the homework by editing \texttt{HW1.Rmd}.
+\item
+  Run your code in the Console and Knit HTML frequently to check for
+  errors.
+\item
+  You may find it easier to solve a problem by interacting only with the
+  Console at first.
+\item
+  When you have completed the homework please check that your knits
+  correctly when you click \texttt{Knit\ HTML}.
+\item
+  ``Push'' all your local changes to the GitHub Repo for the project.
+\item
+  Submit your RMD file, the HTML output and a link to your GitHub Repo
+  on Canvas.
+\end{enumerate}
+
+\hypertarget{data-frame-basics}{%
+\subsection{Data frame basics}\label{data-frame-basics}}
+
+We will continue working with the nycflights dataset we looked at in
+class. \textbf{Please be sure to keep the data file in the same
+directory as the RMD file - your project directory.}
+
+First - make sure that you are reading the data correctly and doing all
+the data cleaning steps that we did in class. Feel free to go beyond our
+class work in cleaning the data if you feel the need.
+
+I now would like you to answer the following - all in their own separate
+R code blocks.
+
+\hypertarget{data-exploration}{%
+\subsubsection{Data Exploration}\label{data-exploration}}
+
+Let's first do some simple exploration of this data.
+
+\begin{itemize}
+\item
+  How many airlines are there? (Hint: \texttt{levels} and
+  \texttt{length} can be useful here)
+\item
+  How many flights there were by the airline with code \texttt{OO}?
+  (Hint: \texttt{nrow} can be useful here along with logical indexing)
+\item
+  How long is the shortest flight out of any NYC airport? (Hint:
+  \texttt{min} can be useful, remember to handle \texttt{NA} values)
+\item
+  How many flights where there by United Airlines (code: UA) on Jan 12th
+  2013?
+\end{itemize}
+
+\hypertarget{arrival-delay}{%
+\subsubsection{Arrival Delay}\label{arrival-delay}}
+
+Lets focus on Arrival Delay.
+
+\begin{itemize}
+\item
+  What was the average arrival delay for all airports and all airlines
+  combined in Jan 2013?
+\item
+  Whats was the median arrival delay for all airports and all airlines
+  combined in Jan 2013?
+\end{itemize}
+
+Based on your answers to the two questions above, what can you say about
+the distribution of arrival delays? Provide your answer in a text
+paragraph form.
+
+\hypertarget{airline-performance}{%
+\subsubsection{Airline Performance}\label{airline-performance}}
+
+Lets see if all airlines are equally terrible as far as flight arrival
+delays are concerned. For this question you will have to make sure that
+airline column is coded as a factor.
+
+\begin{itemize}
+\item
+  Calculate average arrival delays by airline (Hint: look up the command
+  \texttt{tapply})
+\item
+  Draw a Bar Plot of Average Arrival Delays for all the Airlines (Hint:
+  command for making a Bar Plot is simply \texttt{barplot})
+\item
+  Which airline has the highest average arrival delay? Which airline has
+  the smallest average arrival delay? Are there airlines that actually
+  have negative average delay? Provide answer to this question in a text
+  paragraph form using \textbf{inline R code}.
+\end{itemize}
+
+\hypertarget{air-gain}{%
+\subsubsection{Air Gain}\label{air-gain}}
+
+Create a new column named airgain such that airgain = (departure delay -
+arrival delay) : this is the amount of delay a flight made up while in
+air.
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  Explore airgain data - calculate suitable descriptive statistics and
+  appropriate graphics to better understand this data. This part is open
+  ended - you do what you feel works best for you.
+\item
+  Answer the questions:
+\end{enumerate}
+
+\begin{itemize}
+\item
+  do airlines actually gain any time when in air on average?
+\item
+  Calculate average airgain for different airlines - which airlines do a
+  better job, which do a worse job?
+\end{itemize}
+
+\hypertarget{merging-data-frames}{%
+\subsubsection{Merging Data Frames}\label{merging-data-frames}}
+
+\begin{quote}
+This section and the next is new compared to the class exercise. As you
+had an opportunity to work together in your breakout rooms for previous
+questions, this and the next section will carry a higher weight in
+grading for this HW.
+\end{quote}
+
+You can get detailed information about the physical planes in our
+dataset in this file: \texttt{planes.csv}. Download and save this file
+in your project directory.
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  Read the \texttt{planes.csv} file using \texttt{read.csv} command. Do
+  any data cleaning necessary.
+\item
+  Merge the flights data and the planes data using the \texttt{merge}
+  command. You should do the merge on the common column named
+  \texttt{tailnum}. \emph{getting this right may need some trial and
+  error and getting some help}.
+\item
+  Now that you have a merged dataset, think of what interesting
+  questions that you can ask that can be answered using the merged
+  dataset. You are asked to pose five interesting questions and answer
+  them. (For example: who are the top 10 manufacturers of planes that
+  fly out of NYC airports?) \textbf{Be creative. Be bold. Ask questions
+  that you would want to know answers to even if you were not doing this
+  for a HW. }
+\end{enumerate}
+
+\hypertarget{making-your-html-look-nice}{%
+\subsubsection{Making Your HTML Look
+Nice}\label{making-your-html-look-nice}}
+
+We want our report to be good looking, professional documents. To that
+end, I am asking you to do the following:
+
+\begin{itemize}
+\item
+  Have a floating table of contents
+\item
+  Include code folding in your output. You can find more about code
+  folding here:
+  \url{https://bookdown.org/yihui/rmarkdown/html-document.html\#code-folding}
+\end{itemize}
+
+That's it. Once you are done, make sure everything works and knits well
+and then you can push your changes to the GitHub repo and uplaod the RMD
+flile and the html output to Canvas.
+
+\textbf{Have Fun!}
+
+Sanjeev
+
+\end{document}
