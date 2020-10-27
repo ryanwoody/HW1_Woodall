@@ -3,8 +3,8 @@ title: "Homework Assignment 1"
 author: "Ryan Woodall"
 date: 'Assigned: Oct 24, 2020, Due Sun Nov 01, 2020 11:59PM'
 output:
-  pdf_document: default
-  html_document: default
+  html_document:
+    code_folding: hide
 ---
 
 ## HW-1 Instructions
@@ -40,49 +40,153 @@ I now would like you to answer the following - all in their own separate R code 
 
 ### Data Exploration
 
+#### Setup
+```{r}
+library(dplyr)
+library(ggplot2)
+
+nyc <- read.csv("nycflights.csv")
+str(nyc)
+nyc$X <- NULL
+
+# Factorize necessary variables
+nyc$carrier <- as.factor(nyc$carrier)
+nyc$tailnum <- as.factor(nyc$tailnum)
+nyc$origin <- as.factor(nyc$origin)
+nyc$dest <- as.factor(nyc$dest)
+
+str(nyc)
+
+```
+
+#### Questions
+
 Let's first do some simple exploration of this data. 
 
 - How many airlines are there? (Hint: `levels` and `length` can be useful here)
 
+There are `r length(levels(nyc$carrier))` airlines in this data set.
+
 - How many flights there were by the airline with code `OO`? (Hint: `nrow` can be useful here along with logical indexing)
+
+There were `rnrow( nyc[nyc$carrier == "OO", ])` flights by the airline with the code "OO".
 
 - How long is the shortest flight out of any NYC airport? (Hint: `min` can be useful, remember to handle `NA` values)
 
+The shortest flight out of any NYC airport is `rmin(nyc$distance, na.rm = TRUE)` minutes
+
 - How many flights where there by United Airlines (code: UA) on Jan 12th 2013?
+
+There were `r nrow( nyc[nyc$carrier == "UA" & nyc$year == 2013 & nyc$month == 1 & nyc$day == 12, ])` flights by United Airlines on January 12th 2013.
 
 
 ### Arrival Delay
 
 Lets focus on Arrival Delay.
 
+#### Setup
+
+```{r}
+jan2013sub <- subset(nyc, nyc$year == 2013 & nyc$month == 1, )
+```
+
+
+#### Questions
+
 - What was the average arrival delay for all airports and all airlines combined in Jan 2013? 
+
+The average arrival delay was `r mean(jan2013sub$arr_delay, na.rm = TRUE)` in January of 2013.
 
 - Whats was the median arrival delay for all airports and all airlines combined in Jan 2013?
 
+The median arrival delay was `r median(jan2013sub$arr_delay, na.rm = TRUE)` in January of 2013.
+
 Based on your answers to the two questions above, what can you say about the distribution of arrival delays? Provide your answer in a text paragraph form.
 
+The distribution appears to be skewed right, since the mean is higher than the median.  The data set contains more negative delays than positive delays, however since the mean is so much higher there are likely many observations with extreme delays (stretching the right tail out very far)
 
 ### Airline Performance
 
 Lets see if all airlines are equally terrible as far as flight arrival delays are concerned. For this question you will have to make sure that airline column is coded as a factor.
 
+#### Setup
+```{r}
+mean.arr.delay.airlines <- tapply(nyc$arr_delay, nyc$carrier, mean, na.rm = TRUE)
+
+```
+
+#### Questions
+
 - Calculate average arrival delays by airline (Hint: look up the command `tapply`)
+
+See below table for average arrival delays by airline:
+
+```{r}
+mean.arr.delay.airlines # Delay by airline table
+```
+
 
 - Draw a Bar Plot of Average Arrival Delays for all the Airlines (Hint: command for making a Bar Plot is simply `barplot`)
 
+See below plot for a graphical representation of average arrival delays by airline:
+
+
+```{r}
+barplot(mean.arr.delay.airlines) # Barplot of delay by airline
+```
+
+#### Setup mean arrival delay as data frame
+
+```{r}
+mean.arr.delay.airlines.df <- aggregate(nyc$arr_delay, list(nyc$carrier), mean, na.rm = TRUE)
+names(mean.arr.delay.airlines.df)[1] <- "Carrier"
+names(mean.arr.delay.airlines.df)[2] <- "MeanDelay"
+```
+
+
 - Which airline has the highest average arrival delay? Which airline has the smallest average arrival delay? Are there airlines that actually have negative average delay? Provide answer to this question in a text paragraph form using **inline R code**.
+
+The airline that has the highest average arrival delay is `r mean.arr.delay.airlines.df %>% slice_max(MeanDelay)`.
+
+The airline that has the smallest average arrival delay is `r mean.arr.delay.airlines.df %>% slice_min(MeanDelay)`.  
+
+Yes, there are airlines that have a negative average delay, such as AS (Alaska) and HA (Hawaii)
 
 ### Air Gain
 
 Create a new column named airgain such that airgain = (departure delay - arrival delay) : this is the amount of delay a flight made up while in air.
 
+#### Setup
+
+```{r}
+nyc$airgain <- nyc$dep_delay - nyc$arr_delay # Create airgain column
+airgainplot <- ggplot(data=nyc, aes(x=carrier, y=airgain)) # Setup a base ggplot item
+```
+
+
 a) Explore airgain data - calculate suitable descriptive statistics and appropriate graphics to better understand this data. This part is open ended - you do what you feel works best for you.
+
+```{r}
+summary(nyc$airgain)
+airgainplot + geom_boxplot() # Box and whisker plot
+```
+
+#### Questions
 
 b) Answer the questions:
 
   - do airlines actually gain any time when in air on average? 
 
+The average flight gains `r mean(nyc$airgain, na.rm = TRUE)` - so yes, they do on average.
+
   - Calculate average airgain for different airlines - which airlines do a better job, which do a worse job? 
+
+```{r}
+mean.airgain.airlines <- tapply(nyc$airgain, nyc$carrier, mean, na.rm = TRUE)
+mean.airgain.airlines
+barplot(mean.airgain.airlines)
+```
+
 
 ### Merging Data Frames
 
@@ -92,9 +196,108 @@ You can get detailed information about the physical planes in our dataset in thi
 
 a) Read the `planes.csv` file using `read.csv` command. Do any data cleaning necessary.
 
+```{r}
+planes <- read.csv("planes.csv")
+summary(planes)
+str(planes)
+
+# Data cleaning
+planes$X <- NULL
+planes$type <- as.factor(planes$type)
+planes$manufacturer <- as.factor(planes$manufacturer)
+planes$model <- as.factor(planes$model)
+planes$engine <- as.factor(planes$engine)
+str(planes)
+
+# Add "planes" df missing columns & change year column
+nyc$year <- nyc$flightyear
+nyc$year <- NA
+nyc$type <- NA
+nyc$manufacturer <- NA
+nyc$model <- NA
+nyc$engines <- NA
+nyc$seats <- NA
+nyc$speed <- NA
+nyc$engine <- NA
+```
+
+
 b) Merge the flights data and the planes data using the `merge` command. You should do the merge on the common column named `tailnum`. *getting this right may need some trial and error and getting some help*.
 
+```{r}
+# Add "planes" df missing columns & change year column
+nyc$year <- nyc$flightyear
+nyc$year <- NA
+nyc$type <- NA
+nyc$manufacturer <- NA
+nyc$model <- NA
+nyc$engines <- NA
+nyc$seats <- NA
+nyc$speed <- NA
+nyc$engine <- NA
+
+# Create the merged frame
+mergedframe <- merge(planes, nyc, by = "tailnum")
+str(mergedframe)
+
+# Remove NA Columns
+mergedframe$year.y <- NULL
+mergedframe$type.y <- NULL
+mergedframe$manufacturer.y <- NULL
+mergedframe$model.y <- NULL
+mergedframe$engines.y <- NULL
+mergedframe$seats.y <- NULL
+mergedframe$speed.y <- NULL
+mergedframe$engine.y <- NULL
+str(mergedframe)
+```
+
+
 c) Now that you have a merged dataset, think of what interesting questions that you can ask that can be answered using the merged dataset. You are asked to pose five interesting questions and answer them. (For example: who are the top 10 manufacturers of planes that fly out of NYC airports?) **Be creative. Be bold. Ask questions that you would want to know answers to even if you were not doing this for a HW. **
+
+What is the average number of engines used for each carrier?
+
+```{r}
+tapply(mergedframe$engines.x, mergedframe$carrier, mean, na.rm = TRUE)
+```
+
+What model has the highest average arrival delay?
+
+```{r}
+mean.arr.delay.model <- aggregate(mergedframe$arr_delay, list(mergedframe$model.x), mean, na.rm = TRUE)
+names(mean.arr.delay.model) [1] <- "Model"
+names(mean.arr.delay.model) [2] <- "MeanDelay"
+mean.arr.delay.model %>% slice_max(MeanDelay)
+```
+
+The 747-451 has the highest average arrival delay.
+
+What model has the greatest airgain?
+
+```{r}
+mean.airgain.model <- aggregate(mergedframe$airgain, list(mergedframe$model.x), mean, na.rm = TRUE)
+names(mean.airgain.model) [1] <- "Model"
+names(mean.airgain.model) [2] <- "MeanAirgain"
+mean.airgain.model %>% slice_max(MeanAirgain)
+```
+The 757-212 has the highest average airgain.
+
+What is the average distance flown for jets with each # of engines?
+
+```{r}
+tapply(mergedframe$distance, mergedframe$engines.x, mean, na.rm = TRUE)
+```
+
+Surprisingly, planes with fewer engines fly longer routes.  My intuition says that this could be due to most passengers flying short haul flights, therefore larger planes fly these short haul routes more often.
+
+Does an increase in engines lead to an increase in airgain?
+
+```{r}
+tapply(mergedframe$airgain, mergedframe$engines.x, mean, na.rm = TRUE)
+
+```
+
+More engines is correlated with more airgain up until you reach 4 engines, which has the lowest airgain.  
 
 ### Making Your HTML Look Nice
 
